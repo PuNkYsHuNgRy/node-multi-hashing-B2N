@@ -261,13 +261,16 @@ struct cryptonight_ctx {
     oaes_ctx* aes_ctx;
 };
 
-void cryptonight_hash(const char* input, char* output, uint32_t len, int variant, uint64_t height) {
+void cryptonight_hash(const char* input, char* output, uint32_t len, int b2n, uint64_t height) {
     struct cryptonight_ctx *ctx = alloca(sizeof(struct cryptonight_ctx));
     hash_process(&ctx->state.hs, (const uint8_t*) input, len);
     memcpy(ctx->text, ctx->state.init, INIT_SIZE_BYTE);
     memcpy(ctx->aes_key, ctx->state.hs.b, AES_KEY_SIZE);
     ctx->aes_ctx = (oaes_ctx*) oaes_alloc();
     size_t i, j;
+    size_t memory = b2n ? MKT_MEMORY : MEMORY;
+    size_t iterations = b2n ? MKT_ITER : ITER;
+    size_t mask = b2n ? MKT_MASK : MASK;
 
     VARIANT1_INIT();
     VARIANT2_INIT(ctx->b, ctx->state);
